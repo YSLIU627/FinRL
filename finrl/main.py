@@ -20,6 +20,7 @@ from finrl.config import (
     ALPACA_API_KEY,
     ALPACA_API_SECRET,
     ALPACA_API_BASE_URL,
+    PPO_PARAMS
 )
 
 
@@ -51,11 +52,11 @@ def main():
         os.makedirs("./" + RESULTS_DIR)
 
     if options.mode == "train":
-        from finrl import train
+        from Documents.zhihan_code.FinRL.train import train
 
         env = StockTradingEnv
 
-        # demo for elegantrl
+        # demo for stablebaselines3
         kwargs = {}  # in current finrl_meta, with respect yahoofinance, kwargs is {}. For other data sources, such as joinquant, kwargs is not empty
         train(
             start_date=TRAIN_START_DATE,
@@ -64,19 +65,19 @@ def main():
             data_source="yahoofinance",
             time_interval="1D",
             technical_indicator_list=TECHNICAL_INDICATORS_LIST,
-            drl_lib="elegantrl",
+            drl_lib="stable_baselines3",
             env=env,
             model_name="ppo",
             cwd="./test_ppo",
-            erl_params=ERL_PARAMS,
+            erl_params=PPO_PARAMS,
             break_step=1e5,
             kwargs=kwargs,
         )
     elif options.mode == "test":
-        from finrl import test
+        from finrl.test import test
         env = StockTradingEnv
 
-        # demo for elegantrl
+        # demo for stablebaselines3
         kwargs = {}  # in current finrl_meta, with respect yahoofinance, kwargs is {}. For other data sources, such as joinquant, kwargs is not empty
 
         account_value_erl = test(
@@ -86,7 +87,7 @@ def main():
             data_source="yahoofinance",
             time_interval="1D",
             technical_indicator_list=TECHNICAL_INDICATORS_LIST,
-            drl_lib="elegantrl",
+            drl_lib="stablebaselines3",
             env=env,
             model_name="ppo",
             cwd="./test_ppo",
@@ -94,7 +95,7 @@ def main():
             kwargs=kwargs,
         )
     elif options.mode == "trade":
-        from finrl import trade
+        from finrl.trade import trade
         env = StockTradingEnv
         kwargs = {}
         trade(
@@ -104,7 +105,7 @@ def main():
             data_source="yahoofinance",
             time_interval="1D",
             technical_indicator_list=TECHNICAL_INDICATORS_LIST,
-            drl_lib="elegantrl",
+            drl_lib="stablebaselines3",
             env=env,
             model_name="ppo",
             API_KEY=ALPACA_API_KEY,

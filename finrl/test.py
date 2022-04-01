@@ -24,7 +24,7 @@ def test(
         **kwargs
 ):
     # import DRL agents
-    from finrl.agents.stablebaselines3.models import DRLAgent as DRLAgent_sb3
+    from finrl.agents.risk_old.models import DRLAgent as DRLAgent_sb3
     from finrl.agents.rllib.models import DRLAgent as DRLAgent_rllib
     from finrl.agents.elegantrl.models import DRLAgent as DRLAgent_erl
 

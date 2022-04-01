@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "finrl/train.py", line 243, in <module>
+    args = get_args()
+  File "finrl/train.py", line 196, in get_args
+    parser.add_argument('--drl_lib',defualt = 'risk')
+  File "/home/bananach/anaconda3/envs/lzh/lib/python3.8/argparse.py", line 1368, in add_argument
+    action = action_class(**kwargs)
+TypeError: __init__() got an unexpected keyword argument 'defualt'

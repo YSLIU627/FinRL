@@ -100,6 +100,8 @@ class DRLAgent:
             eval_time  = 20,
             eq_reward = True,
             dirs = './results',
+            max_lambda = 0.1,
+            variance_control = 12,
             **kwargs
     ):
         if model_name not in MODELS:
@@ -114,6 +116,8 @@ class DRLAgent:
                 mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions)
             )
         print(model_kwargs)
+        print("debug",lambda_fix)
+        #print("debugg2",variance_control,float(variance_control),float(variance_control).pow(2.0))
         return MODELS[model_name](
             policy=policy,
             env=self.env,
@@ -127,6 +131,8 @@ class DRLAgent:
             eq_reward = eq_reward,
             eval_interval = eval_interval,
             eval_time = eval_time,
+            max_lambda = float(max_lambda),
+            variance_control = float(variance_control),
             **model_kwargs,
         )
 
@@ -164,12 +170,12 @@ class DRLAgent:
     def DRL_prediction_load_from_file(model_name, environment, cwd, deterministic=True):
         if model_name not in MODELS:
             raise NotImplementedError("NotImplementedError")
-        try:
+        #try:
             # load agent
-            model = MODELS[model_name].load(cwd)
-            print("Successfully load model", cwd)
-        except BaseException:
-            raise ValueError("Fail to load agent!")
+        model = MODELS[model_name].load(cwd)
+        print("Successfully load model", cwd)
+        #except BaseException:
+        #    raise ValueError("Fail to load agent!")
 
         # test on the testing env
         state = environment.reset()

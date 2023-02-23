@@ -96,14 +96,21 @@ def train(
         total_timesteps = kwargs.get("total_timesteps", 1e6)
         agent_params = kwargs.get("agent_params")
         from finrl.agents.stablebaselines3.models import DRLAgent as DRLAgent_sb3
+        #from finrl.agents.risk.models import DRLAgent as DRLAgent_sb3
         agent = DRLAgent_sb3(env=env_instance)
 
         model = agent.get_model(model_name, model_kwargs=agent_params,dirs = kwargs.get('dirs'),
-        eval_interval=kwargs.get('eval_interval'),seed = kwargs.get('seed'),eval_time=kwargs.get('eval_time'),eval_timestep = kwargs.get('eval_timestep'))
+        eval_interval=kwargs.get('eval_interval'),seed = kwargs.get('seed'),eval_time=kwargs.get('eval_time'),eval_timestep = kwargs.get('eval_timestep'),lambda_decay =kwargs.get('lambda_decay'))
+        
+        #model = agent.get_model(model_name, model_kwargs=agent_params,seed = kwargs.get('seed'))
+        model = agent.get_model(model_name, model_kwargs=agent_params,dirs = kwargs.get('dirs'),lambda_fix = kwargs.get('lambda_fix'),y_mode = kwargs.get('y_mode'),
+        eval_interval=kwargs.get('eval_interval'),eq_reward=kwargs.get('eq_reward'),seed = kwargs.get('seed'),eval_time=kwargs.get('eval_time'),eval_timestep = kwargs.get('eval_timestep'),same_learning_rate = kwargs.get('same_learning_rate'),time_out = kwargs.get('time_out'),lr_ratio = kwargs.get('lr_ratio'))
+
         trained_model = agent.train_model(
             model=model, tb_log_name=model_name, total_timesteps=total_timesteps
         )
-        cwd = kwargs.get('dirs')
+        
+        cwd = kwargs.get('dirs')+'/'
         print("Training finished!")
         trained_model.save(cwd)
         print("Trained model saved in " + str(cwd))
@@ -116,11 +123,18 @@ def train(
         agent = DRLAgent2(env=env_instance)
         
         model = agent.get_model(model_name, model_kwargs=agent_params,dirs = kwargs.get('dirs'),lambda_fix = kwargs.get('lambda_fix'),y_mode = kwargs.get('y_mode'),
-        eval_interval=kwargs.get('eval_interval'),eq_reward=kwargs.get('eq_reward'),seed = kwargs.get('seed'),eval_time=kwargs.get('eval_time'),eval_timestep = kwargs.get('eval_timestep'))
+        eval_interval=kwargs.get('eval_interval'),eq_reward=kwargs.get('eq_reward'),
+        max_lambda = kwargs.get('max_lambda'),variance_control = kwargs.get('variance_control'),seed = kwargs.get('seed'),eval_time=kwargs.get('eval_time'),eval_timestep = kwargs.get('eval_timestep'),same_learning_rate = kwargs.get('same_learning_rate'),time_out = kwargs.get('time_out'),lr_ratio = kwargs.get('lr_ratio'))
+        
+        cwd = "saved_models/"+kwargs.get('dirs')+'/model'
+        print("Training finished!")
+        model.save(cwd)
+        print("Trained model saved in " + str(cwd))
+
         trained_model = agent.train_model(
             model=model, tb_log_name=model_name, total_timesteps=total_timesteps
         )
-        cwd = kwargs.get('dirs')
+        cwd = "saved_models/"+kwargs.get('dirs')+'/model'
         print("Training finished!")
         trained_model.save(cwd)
         print("Trained model saved in " + str(cwd))
@@ -183,13 +197,13 @@ if __name__ == "__main__":
                             default=int(1e6),
                             type=int)
         parser.add_argument('--variance_control',
-                            default=0.05,
+                            default=13.0,
                             type=float)  
         parser.add_argument('--max_lambda',
-                            default=1.0,
+                            default=0.1,
                             type=float) 
         parser.add_argument('--lambdas',
-                            default=1.0, type = float)  
+                            default=None)  
         parser.add_argument('--eq_reward',
                             type=bool,
                             default=False,
@@ -202,6 +216,10 @@ if __name__ == "__main__":
         parser.add_argument('--eval_interval',default = 4, type = int)
         parser.add_argument('--drl_lib',default = 'risk')
         parser.add_argument('--model_name',default = 'ppo',type = str)
+        parser.add_argument('--same_learning_rate',default = False,action = 'store_true')
+        parser.add_argument('--lr_ratio',default = 3.33333333,type = float)
+        
+        parser.add_argument('--lambda_decay',default = None,type = int)
         args = parser.parse_args()
         print(time.asctime( time.localtime(time.time()) ))
         print(args)
@@ -249,7 +267,7 @@ if __name__ == "__main__":
     #
 
     args = get_args()
-    dirs = 'results/' + args.dirs_root+ args.drl_lib + args.model_name+args.data_source
+    dirs = 'results/' + args.dirs_root+str(args.seed)+ args.drl_lib + args.model_name+args.data_source
     pathlib.Path(dirs).mkdir(exist_ok= args.cover)
     write_to_json(vars(args),dirs + '/setting.json')
     sys.stdout = Logger(stream=sys.stdout,filename=dirs+'/log.log')
@@ -272,5 +290,14 @@ if __name__ == "__main__":
          lambda_fix =args.lambdas,
          eval_time = args.eval_time,
          eval_interval = args.eval_interval,
-         eval_timesteps = args.eval_timestep
+         eval_timesteps = args.eval_timestep,
+         same_learning_rate = args.same_learning_rate,
+         y_mode = args.y_mode,
+         eq_reward = args.eq_reward,
+         seed = int(args.seed),
+         time_out = args.time_out,
+         lr_ratio = args.lr_ratio,
+         lambda_decay = args.lambda_decay,
+         max_lambda = args.max_lambda,
+         variance_control = args.variance_control
      )

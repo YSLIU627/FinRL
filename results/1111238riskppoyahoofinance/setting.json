@@ -1,0 +1,22 @@
+{
+    "Time": "Wed Feb 22 17:57:55 2023",
+    "data_source": "yahoofinance",
+    "seed": 1238,
+    "cover": true,
+    "dirs_root": "111",
+    "eval_timestep": "120000",
+    "eval_time": 20,
+    "train_timestep": 600000,
+    "variance_control": 13.0,
+    "max_lambda": 0.1,
+    "lambdas": "0",
+    "eq_reward": true,
+    "y_mode": "MC_mean_2",
+    "time_out": "Boot",
+    "eval_interval": 4,
+    "drl_lib": "risk",
+    "model_name": "ppo",
+    "same_learning_rate": false,
+    "lr_ratio": 3.33333333,
+    "lambda_decay": 4
+}

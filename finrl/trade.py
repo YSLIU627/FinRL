@@ -1,5 +1,5 @@
 from finrl.finrl_meta.env_stock_trading.env_stock_papertrading import AlpacaPaperTrading
-from finrl.test import test
+from test import test
 
 
 def trade(start_date, end_date, ticker_list, data_source, time_interval,

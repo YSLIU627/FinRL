@@ -7,8 +7,8 @@ import matplotlib
 import numpy as np
 import pandas as pd
 from gym import spaces
-from stable_baselines3.common import logger
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
+from RiskRL.common import logger
+from RiskRL.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 matplotlib.use("Agg")
 

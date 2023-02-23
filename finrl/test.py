@@ -7,9 +7,9 @@ from finrl.config import (
 
 from finrl.config_tickers import DOW_30_TICKER
 
-from finrl.finrl_meta.env_stock_trading.env_stocktrading import StockTradingEnv
 
 
+from finrl.finrl_meta.env_stock_trading.env_stocktrading_np import StockTradingEnv
 def test(
         start_date,
         end_date,
@@ -24,9 +24,8 @@ def test(
         **kwargs
 ):
     # import DRL agents
-    from finrl.agents.risk_old.models import DRLAgent as DRLAgent_sb3
-    from finrl.agents.rllib.models import DRLAgent as DRLAgent_rllib
-    from finrl.agents.elegantrl.models import DRLAgent as DRLAgent_erl
+    from finrl.agents.risk.models import DRLAgent as DRLAgent_sb3
+
 
     # import data processor
     from finrl.finrl_meta.data_processor import DataProcessor
@@ -54,31 +53,16 @@ def test(
     cwd = kwargs.get("cwd", "./" + str(model_name))
     print("price_array: ", len(price_array))
 
-    if drl_lib == "elegantrl":
-        episode_total_assets = DRLAgent_erl.DRL_prediction(
-            model_name=model_name,
-            cwd=cwd,
-            net_dimension=net_dimension,
-            environment=env_instance,
-        )
 
-        return episode_total_assets
-
-    elif drl_lib == "rllib":
-        # load agent
-        episode_total_assets = DRLAgent_rllib.DRL_prediction(
-            model_name=model_name,
-            env=env,
-            price_array=price_array,
-            tech_array=tech_array,
-            turbulence_array=turbulence_array,
-            agent_path=cwd,
-        )
-
-        return episode_total_assets
-
-    elif drl_lib == "stable_baselines3":
+    if drl_lib == "stable_baselines3":
         episode_total_assets = DRLAgent_sb3.DRL_prediction_load_from_file(
+            model_name=model_name, environment=env_instance, cwd=cwd
+        )
+
+        return episode_total_assets
+    elif drl_lib == "risk":
+        from finrl.agents.risk.models import DRLAgent as DRLAgent2
+        episode_total_assets = DRLAgent2.DRL_prediction_load_from_file(
             model_name=model_name, environment=env_instance, cwd=cwd
         )
 
@@ -100,32 +84,14 @@ if __name__ == "__main__":
         data_source="yahoofinance",
         time_interval="1D",
         technical_indicator_list=TECHNICAL_INDICATORS_LIST,
-        drl_lib="elegantrl",
+        drl_lib="risk",
         env=env,
         model_name="ppo",
-        cwd="./test_ppo",
-        net_dimension=512,
+        cwd="./saved_models/results/1111238riskppoyahoofinance/mode",
         kwargs=kwargs,
     )
 
-    ## if users want to use rllib, or stable-baselines3, users can remove the following comments
 
-    # # demo for rllib
-    # import ray
-    # ray.shutdown()  # always shutdown previous session if any
-    # account_value_rllib = test(
-    #     start_date=TEST_START_DATE,
-    #     end_date=TEST_END_DATE,
-    #     ticker_list=DOW_30_TICKER,
-    #     data_source="yahoofinance",
-    #     time_interval="1D",
-    #     technical_indicator_list=TECHNICAL_INDICATORS_LIST,
-    #     drl_lib="rllib",
-    #     env=env,
-    #     model_name="ppo",
-    #     cwd="./test_ppo/checkpoint_000030/checkpoint-30",
-    #     rllib_params=RLlib_PARAMS,
-    # )
     #
     # # demo for stable baselines3
     # account_value_sb3 = test(

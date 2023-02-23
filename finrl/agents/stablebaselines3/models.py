@@ -5,7 +5,7 @@ import time
 import numpy as np
 import pandas as pd
 from stable_baselines3 import A2C, DDPG, PPO, SAC, TD3
-from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.callbacks import BaseCallback,EvalCallback
 from stable_baselines3.common.noise import (
     NormalActionNoise,
     OrnsteinUhlenbeckActionNoise,
@@ -73,6 +73,13 @@ class DRLAgent:
             verbose=1,
             seed=None,
             tensorboard_log=None,
+            lambda_fix = 0.0,
+            y_mode = 'MC_mean_2',
+            eval_interval = 4,
+            eval_time  = 20,
+            eq_reward = True,
+            dirs = './results',
+            **kwargs
     ):
         if model_name not in MODELS:
             raise NotImplementedError("NotImplementedError")
@@ -93,6 +100,12 @@ class DRLAgent:
             verbose=verbose,
             policy_kwargs=policy_kwargs,
             seed=seed,
+            lambda_fix = 0.0,
+            y_mode = 'MC_mean_2',
+            eval_interval = eval_interval,
+            eval_time  = eval_time,
+            eq_reward = eq_reward,
+            dirs = './results_july',
             **model_kwargs,
         )
 

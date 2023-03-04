@@ -6,7 +6,7 @@ from finrl.config import (
 )
 
 from finrl.config_tickers import DOW_30_TICKER
-
+import numpy as np
 
 
 from finrl.finrl_meta.env_stock_trading.env_stocktrading_np import StockTradingEnv
@@ -21,6 +21,8 @@ def test(
         env,
         model_name,
         if_vix=True,
+        download_data = False,
+        test_on_train = False,
         **kwargs
 ):
     # import DRL agents
@@ -32,14 +34,29 @@ def test(
 
     # fetch data
     dp = DataProcessor(data_source, **kwargs)
-    data = dp.download_data(ticker_list, start_date, end_date, time_interval)
-    data = dp.clean_data(data)
-    data = dp.add_technical_indicator(data, technical_indicator_list)
+    if download_data:
+    
+        data = dp.download_data(ticker_list, start_date, end_date, time_interval)
+        data = dp.clean_data(data)
+        data = dp.add_technical_indicator(data, technical_indicator_list)
+        if if_vix:
+            data = dp.add_vix(data)
+        price_array, tech_array, turbulence_array = dp.df_to_array(data, if_vix)
 
-    if if_vix:
-        data = dp.add_vix(data)
-    price_array, tech_array, turbulence_array = dp.df_to_array(data, if_vix)
-
+        with open('download_data_for_test.npy', 'wb') as f:
+            np.save(f,price_array)
+            np.save(f,tech_array)
+            np.save(f,turbulence_array)
+            print("Saved downloaded test data! Please restart to train on this data.")
+    else:
+        if test_on_train:
+            strs = 'download_data.npy' 
+        else:
+            strs = 'download_data_for_test.npy'
+        with open(strs, 'rb') as f:
+            price_array = np.load(f)
+            tech_array = np.load(f)
+            turbulence_array = np.load(f)   
     env_config = {
         "price_array": price_array,
         "tech_array": tech_array,

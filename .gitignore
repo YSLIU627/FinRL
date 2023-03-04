@@ -11,7 +11,15 @@ __pycache__/
 .json
 # C extensions
 *.so
-
+results/
+results_baseline/
+results_july/
+results_n/
+trained_models/
+saved_models/
+results_mar/
+results_aug/
+results_feb/
 # Distribution / packaging
 .Python
 build/

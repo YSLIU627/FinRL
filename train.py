@@ -267,7 +267,7 @@ if __name__ == "__main__":
     #
 
     args = get_args()
-    dirs = 'results/' + args.dirs_root+str(args.seed)+ args.drl_lib + args.model_name+args.data_source
+    dirs = 'debug/' + args.dirs_root+str(args.seed)+ args.drl_lib + args.model_name+args.data_source
     pathlib.Path(dirs).mkdir(exist_ok= args.cover)
     write_to_json(vars(args),dirs + '/setting.json')
     sys.stdout = Logger(stream=sys.stdout,filename=dirs+'/log.log')

@@ -60,8 +60,8 @@ def plot(dirs,strs,name,legends):
         plt.fill_between(time, mean - sd, mean + sd, alpha=0.25,label = None) 
     #plot_module('802_l0.01_diff_lr_d4')
     #plot_module('802_l0_diff_lr_d4')
-    plot_module('results_aug/'+'818_lm0.1var13noboot',truncate_ratio=1.0,labels = 'Our Proposed Method')
-    plot_module('results_aug/'+'818_baseline',labels = 'Baseline PPO')
+    plot_module('results_aug/'+'331lm1.0sd0.8',truncate_ratio=1.0,labels = 'Our Proposed Method')
+    plot_module('results_aug/'+'331lm0sd0.8',labels = 'Baseline PPO')
 
     plt.ylabel(legends)
     plt.xlabel("Timesteps")

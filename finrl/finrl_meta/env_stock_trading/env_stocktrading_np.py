@@ -16,6 +16,7 @@ class StockTradingEnv(gym.Env):
         sell_cost_pct=1e-3,
         reward_scaling=2 ** -11,
         initial_stocks=None,
+        seed = None
     ):
         price_ary = config["price_array"]
         tech_ary = config["tech_array"]
@@ -52,7 +53,7 @@ class StockTradingEnv(gym.Env):
         self.total_asset = None
         self.gamma_reward = None
         self.initial_total_asset = None
-
+        
         # environment information
         self.env_name = "StockEnv"
         # self.state_dim = 1 + 2 + 2 * stock_dim + self.tech_ary.shape[1]
@@ -73,11 +74,12 @@ class StockTradingEnv(gym.Env):
         self.action_space = gym.spaces.Box(
             low=-1, high=1, shape=(self.action_dim,), dtype=np.float32
         )
-
+    def seed(self,seed):
+        return seed
     def reset(self):
         self.day = 0
         price = self.price_ary[self.day]
-
+        '''
         if self.if_train:
             self.stocks = (
                 self.initial_stocks + rd.randint(0, 64, size=self.initial_stocks.shape)
@@ -87,7 +89,10 @@ class StockTradingEnv(gym.Env):
                 self.initial_capital * rd.uniform(0.95, 1.05)
                 - (self.stocks * price).sum()
             )
-        else:
+        '''
+        # We remark that the codes above are used in the training of FinRL, while we do not use them in our project, since the introduction
+        # of extra randomess makes it difficult to compare with the PPO baseline,
+        if True:
             self.stocks = self.initial_stocks.astype(np.float32)
             self.stocks_cool_down = np.zeros_like(self.stocks)
             self.amount = self.initial_capital
@@ -95,6 +100,7 @@ class StockTradingEnv(gym.Env):
         self.total_asset = self.amount + (self.stocks * price).sum()
         self.initial_total_asset = self.total_asset
         self.gamma_reward = 0.0
+        print("initial asset",self.total_asset)
         return self.get_state(price)  # state
 
     def step(self, actions):

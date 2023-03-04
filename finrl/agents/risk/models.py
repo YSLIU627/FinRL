@@ -180,8 +180,11 @@ class DRLAgent:
         # test on the testing env
         state = environment.reset()
         episode_returns = []  # the cumulative_return / initial_account
+        episode_returns2 = []  # the cumulative_return / initial_account
         episode_total_assets = [environment.initial_total_asset]
         done = False
+        day = 0
+        total_asset_old = environment.initial_total_asset
         while not done:
             action = model.predict(state, deterministic=deterministic)[0]
             state, reward, done, _ = environment.step(action)
@@ -192,9 +195,16 @@ class DRLAgent:
             )
             episode_total_assets.append(total_asset)
             episode_return = total_asset / environment.initial_total_asset
+            episode_return2 = 1.0*total_asset /total_asset_old   -1.
             episode_returns.append(episode_return)
-
-        print("episode_return", episode_return)
+            episode_returns2.append(episode_return2)
+            total_asset_old = total_asset
+            print(f"Day {day}, daily_return1: {episode_return}")
+            day += 1
+        print("Notes: daily return1: asset today/ inital asset; daily return2: asset today/ asset yesterday -1 ")
+        print(f"Mean of daily return1: {np.mean(episode_returns)}, Std of daily return1: {np.std(episode_returns)}")
+        print(f"Mean of daily return2: {np.mean(episode_returns2)}, Std of daily return1: {np.std(episode_returns2)}")
+        print(f"Max daily loss: {np.min(episode_returns2)}, max long term loss: {np.min(episode_returns)}")
         print("Test Finished!")
         return episode_total_assets
 

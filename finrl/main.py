@@ -1,5 +1,5 @@
 import os
-
+import numpy as np
 from finrl.config import (
     TECHNICAL_INDICATORS_LIST,
     TRAIN_START_DATE,
@@ -28,16 +28,31 @@ def train(
         env,
         model_name,
         if_vix=True,
+        download_data = False,
         **kwargs
 ):
     # download data
     dp = DataProcessor(data_source, **kwargs)
-    data = dp.download_data(ticker_list, start_date, end_date, time_interval)
-    data = dp.clean_data(data)
-    data = dp.add_technical_indicator(data, technical_indicator_list)
-    if if_vix:
-        data = dp.add_vix(data)
-    price_array, tech_array, turbulence_array = dp.df_to_array(data, if_vix)
+    if download_data:
+    
+        data = dp.download_data(ticker_list, start_date, end_date, time_interval)
+        data = dp.clean_data(data)
+        data = dp.add_technical_indicator(data, technical_indicator_list)
+        if if_vix:
+            data = dp.add_vix(data)
+        price_array, tech_array, turbulence_array = dp.df_to_array(data, if_vix)
+
+        with open('download_data.npy', 'wb') as f:
+            np.save(f, price_array)
+            np.save(f,tech_array)
+            np.save(turbulence_array)
+            print("Saved downloaded data! Please restart to train on this data.")
+            return
+    else:    
+        with open('download_data.npy', 'rb') as f:
+            np.load(f, price_array)
+            np.load(f,tech_array)
+            np.load(turbulence_array)   
     env_config = {
         "price_array": price_array,
         "tech_array": tech_array,

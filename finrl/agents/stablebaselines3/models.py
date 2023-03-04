@@ -93,6 +93,7 @@ class DRLAgent:
                 mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions)
             )
         print(model_kwargs)
+        print(f"seed:{seed}")
         return MODELS[model_name](
             policy=policy,
             env=self.env,
@@ -100,11 +101,8 @@ class DRLAgent:
             verbose=verbose,
             policy_kwargs=policy_kwargs,
             seed=seed,
-            lambda_fix = 0.0,
-            y_mode = 'MC_mean_2',
             eval_interval = eval_interval,
             eval_time  = eval_time,
-            eq_reward = eq_reward,
             dirs = './results_july',
             **model_kwargs,
         )
